@@ -1,0 +1,14 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+}
+
+.MuiTable-root {
+  width: 100%;
+  table-layout: fixed;
+}
+
+.MuiTableCell-root {
+  padding: 8px;
+  text-align: center;
+}

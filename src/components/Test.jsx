@@ -9,11 +9,19 @@ import {
   Paper,
   IconButton,
 } from "@mui/material";
-import FinancialData from "../data/financialData.json";
 import DragIndicatorIcon from "@mui/icons-material/DragIndicator";
+import data from "../data/financialData.json";
 
 const FinancialSummaryTable = () => {
-  const [rows, setRows] = useState(FinancialData.Sheet1);
+  const [rows, setRows] = useState([
+    { id: "1", name: "Item 1", amount: "$100", date: "2023-01-01" },
+    { id: "2", name: "Item 2", amount: "$200", date: "2023-02-01" },
+    { id: "3", name: "Item 3", amount: "$300", date: "2023-03-01" },
+    { id: "4", name: "Item 4", amount: "$400", date: "2023-04-01" },
+    { id: "5", name: "Item 5", amount: "$500", date: "2023-05-01" },
+  ]);
+
+  console.log(data.Sheet1);
 
   const [draggedRowIndex, setDraggedRowIndex] = useState(null);
 
@@ -38,22 +46,19 @@ const FinancialSummaryTable = () => {
 
   return (
     <TableContainer component={Paper}>
-      <Table aria-label="financial summary table">
+      <Table>
         <TableHead>
           <TableRow>
-            <TableCell>Move</TableCell>
-            <TableCell>Overhead</TableCell>
-            {Object.keys(rows[0])
-              .filter((key) => key !== "Overhead")
-              .map((month) => (
-                <TableCell key={month}>{month}</TableCell>
-              ))}
+            <TableCell></TableCell>
+            <TableCell>Name</TableCell>
+            <TableCell>Amount</TableCell>
+            <TableCell>Date</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {rows.map((data, index) => (
+          {rows.map((row, index) => (
             <TableRow
-              key={data.Overhead}
+              key={row.id}
               draggable
               onDragStart={handleDragStart(index)}
               onDragOver={handleDragOver(index)}
@@ -65,12 +70,9 @@ const FinancialSummaryTable = () => {
                   <DragIndicatorIcon />
                 </IconButton>
               </TableCell>
-              <TableCell>{data.Overhead}</TableCell>
-              {Object.keys(data)
-                .filter((key) => key !== "Overhead")
-                .map((month) => (
-                  <TableCell key={month}>{data[month]}</TableCell>
-                ))}
+              <TableCell>{row.name}</TableCell>
+              <TableCell>{row.amount}</TableCell>
+              <TableCell>{row.date}</TableCell>
             </TableRow>
           ))}
         </TableBody>

@@ -1,54 +1,81 @@
-import * as React from "react";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import Paper from "@mui/material/Paper";
+import React, { useState } from "react";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  IconButton,
+} from "@mui/material";
+import DragIndicatorIcon from "@mui/icons-material/DragIndicator";
 
-function createData(name, calories, fat, carbs, protein) {
-  return { name, calories, fat, carbs, protein };
-}
+const FinancialSummaryTable = () => {
+  const [rows, setRows] = useState([
+    { id: "1", name: "Item 1", amount: "$100", date: "2023-01-01" },
+    { id: "2", name: "Item 2", amount: "$200", date: "2023-02-01" },
+    { id: "3", name: "Item 3", amount: "$300", date: "2023-03-01" },
+    { id: "4", name: "Item 4", amount: "$400", date: "2023-04-01" },
+    { id: "5", name: "Item 5", amount: "$500", date: "2023-05-01" },
+  ]);
 
-const rows = [
-  createData("Frozen yoghurt", 159, 6.0, 24, 4.0),
-  createData("Ice cream sandwich", 237, 9.0, 37, 4.3),
-  createData("Eclair", 262, 16.0, 24, 6.0),
-  createData("Cupcake", 305, 3.7, 67, 4.3),
-  createData("Gingerbread", 356, 16.0, 49, 3.9),
-];
+  const [draggedRowIndex, setDraggedRowIndex] = useState(null);
 
-export default function FinancialSummaryTable() {
+  const handleDragStart = (index) => (event) => {
+    setDraggedRowIndex(index);
+    event.dataTransfer.effectAllowed = "move";
+    event.dataTransfer.setData("text/html", event.currentTarget);
+  };
+
+  const handleDragOver = (index) => (event) => {
+    event.preventDefault();
+    const newRows = [...rows];
+    const draggedRow = newRows.splice(draggedRowIndex, 1)[0];
+    newRows.splice(index, 0, draggedRow);
+    setDraggedRowIndex(index);
+    setRows(newRows);
+  };
+
+  const handleDrop = () => {
+    setDraggedRowIndex(null);
+  };
+
   return (
     <TableContainer component={Paper}>
-      <Table sx={{ minWidth: 650 }} aria-label="simple table">
+      <Table>
         <TableHead>
           <TableRow>
-            <TableCell>Dessert (100g serving)</TableCell>
-            <TableCell align="right">Calories</TableCell>
-            <TableCell align="right">Fat&nbsp;(g)</TableCell>
-            <TableCell align="right">Carbs&nbsp;(g)</TableCell>
-            <TableCell align="right">Protein&nbsp;(g)</TableCell>
+            <TableCell></TableCell>
+            <TableCell>Name</TableCell>
+            <TableCell>Amount</TableCell>
+            <TableCell>Date</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {rows.map((row) => (
+          {rows.map((row, index) => (
             <TableRow
-              key={row.name}
-              sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+              key={row.id}
+              draggable
+              onDragStart={handleDragStart(index)}
+              onDragOver={handleDragOver(index)}
+              onDrop={handleDrop}
+              style={{ cursor: "move" }}
             >
-              <TableCell component="th" scope="row">
-                {row.name}
+              <TableCell>
+                <IconButton>
+                  <DragIndicatorIcon />
+                </IconButton>
               </TableCell>
-              <TableCell align="right">{row.calories}</TableCell>
-              <TableCell align="right">{row.fat}</TableCell>
-              <TableCell align="right">{row.carbs}</TableCell>
-              <TableCell align="right">{row.protein}</TableCell>
+              <TableCell>{row.name}</TableCell>
+              <TableCell>{row.amount}</TableCell>
+              <TableCell>{row.date}</TableCell>
             </TableRow>
           ))}
         </TableBody>
       </Table>
     </TableContainer>
   );
-}
+};
+
+export default FinancialSummaryTable;

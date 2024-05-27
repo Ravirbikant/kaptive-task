@@ -56,12 +56,19 @@ const FinancialSummaryTable = () => {
 
   const fixedHeaderContent = () => (
     <TableRow>
-      <TableCell style={{ width: 100 }}>Move</TableCell>
-      <TableCell style={{ width: 200 }}>Overhead</TableCell>
+      <TableCell style={{ width: "20px", border: "2px solid black" }}>
+        Move
+      </TableCell>
+      <TableCell style={{ width: "150px", border: "2px solid black" }}>
+        Overhead
+      </TableCell>
       {Object.keys(rows[0])
         .filter((key) => key !== "Overhead")
         .map((month) => (
-          <TableCell key={month} style={{ width: 150 }}>
+          <TableCell
+            key={month}
+            style={{ width: "150px", border: "2px solid black" }}
+          >
             {month}
           </TableCell>
         ))}
@@ -77,17 +84,22 @@ const FinancialSummaryTable = () => {
       onDrop={handleDrop(index)}
       style={{
         cursor: "move",
-        backgroundColor: overIndex === index ? "#f0f0f0" : "inherit",
+        backgroundColor: draggedRowIndex === index ? "green" : "inherit",
       }}
     >
-      <TableCell style={{ width: 100 }}>
+      <TableCell style={{ minWidth: "20px", border: "2px solid black" }}>
         <span style={{ cursor: "move" }}>☰</span>
       </TableCell>
-      <TableCell style={{ width: 200 }}>{data.Overhead}</TableCell>
+      <TableCell style={{ minWidth: "150px", border: "2px solid black" }}>
+        {data.Overhead}
+      </TableCell>
       {Object.keys(data)
         .filter((key) => key !== "Overhead")
         .map((month) => (
-          <TableCell key={month} style={{ width: 150 }}>
+          <TableCell
+            key={month}
+            style={{ minWidth: "150px", border: "2px solid black" }}
+          >
             {data[month]}
           </TableCell>
         ))}

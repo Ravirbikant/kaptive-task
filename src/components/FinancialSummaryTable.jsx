@@ -7,137 +7,74 @@ import {
   TableHead,
   TableRow,
   Paper,
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
+  IconButton,
 } from "@mui/material";
-import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
-
-import financialData from "../data/financialData.json";
-
-const currencySymbols = {
-  USD: "$",
-  EUR: "€",
-  GBP: "£",
-};
-
-const conversionRates = {
-  USD: 1,
-  EUR: 0.85,
-  GBP: 0.75,
-};
+import DragIndicatorIcon from "@mui/icons-material/DragIndicator";
 
 const FinancialSummaryTable = () => {
-  const [currency, setCurrency] = useState("USD");
-  const [decimalPlaces, setDecimalPlaces] = useState(2);
-  const [rows, setRows] = useState(financialData.Sheet1);
+  const [rows, setRows] = useState([
+    { id: "1", name: "Item 1", amount: "$100", date: "2023-01-01" },
+    { id: "2", name: "Item 2", amount: "$200", date: "2023-02-01" },
+    { id: "3", name: "Item 3", amount: "$300", date: "2023-03-01" },
+    { id: "4", name: "Item 4", amount: "$400", date: "2023-04-01" },
+    { id: "5", name: "Item 5", amount: "$500", date: "2023-05-01" },
+  ]);
 
-  const handleCurrencyChange = (event) => {
-    setCurrency(event.target.value);
+  const [draggedRowIndex, setDraggedRowIndex] = useState(null);
+
+  const handleDragStart = (index) => (event) => {
+    setDraggedRowIndex(index);
+    event.dataTransfer.effectAllowed = "move";
+    event.dataTransfer.setData("text/html", event.currentTarget);
   };
 
-  const handleDecimalPlacesChange = (event) => {
-    setDecimalPlaces(event.target.value);
+  const handleDragOver = (index) => (event) => {
+    event.preventDefault();
+    const newRows = [...rows];
+    const draggedRow = newRows.splice(draggedRowIndex, 1)[0];
+    newRows.splice(index, 0, draggedRow);
+    setDraggedRowIndex(index);
+    setRows(newRows);
   };
 
-  const formatValue = (value, rate) => {
-    return `${currencySymbols[currency]} ${(value * rate).toFixed(
-      decimalPlaces
-    )}`;
-  };
-
-  const onDragEnd = (result) => {
-    if (!result.destination) return;
-    const reorderedRows = Array.from(rows);
-    const [removed] = reorderedRows.splice(result.source.index, 1);
-    reorderedRows.splice(result.destination.index, 0, removed);
-    setRows(reorderedRows);
+  const handleDrop = () => {
+    setDraggedRowIndex(null);
   };
 
   return (
-    <Paper style={{ padding: 16 }}>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          marginBottom: 16,
-        }}
-      >
-        <FormControl style={{ minWidth: 120 }}>
-          <InputLabel>Currency</InputLabel>
-          <Select value={currency} onChange={handleCurrencyChange}>
-            {Object.keys(currencySymbols).map((cur) => (
-              <MenuItem key={cur} value={cur}>
-                {cur}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-        <FormControl style={{ minWidth: 120 }}>
-          <InputLabel>Decimal Places</InputLabel>
-          <Select value={decimalPlaces} onChange={handleDecimalPlacesChange}>
-            {[0, 1, 2].map((dp) => (
-              <MenuItem key={dp} value={dp}>
-                {dp}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-      </div>
-      <TableContainer>
-        <DragDropContext onDragEnd={onDragEnd}>
-          <Droppable droppableId="table-body">
-            {(provided) => (
-              <Table {...provided.droppableProps} ref={provided.innerRef}>
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Overhead</TableCell>
-                    {Array.from({ length: 12 }, (_, i) => (
-                      <TableCell key={i}>
-                        {new Date(0, i).toLocaleString("default", {
-                          month: "long",
-                        })}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {rows.map((row, index) => (
-                    <Draggable
-                      key={row.Overhead}
-                      draggableId={row.Overhead}
-                      index={index}
-                    >
-                      {(provided) => (
-                        <TableRow
-                          ref={provided.innerRef}
-                          {...provided.draggableProps}
-                          {...provided.dragHandleProps}
-                        >
-                          <TableCell>{row.Overhead}</TableCell>
-                          {Object.keys(row)
-                            .slice(1)
-                            .map((month) => (
-                              <TableCell key={month}>
-                                {formatValue(
-                                  row[month],
-                                  conversionRates[currency]
-                                )}
-                              </TableCell>
-                            ))}
-                        </TableRow>
-                      )}
-                    </Draggable>
-                  ))}
-                  {provided.placeholder}
-                </TableBody>
-              </Table>
-            )}
-          </Droppable>
-        </DragDropContext>
-      </TableContainer>
-    </Paper>
+    <TableContainer component={Paper}>
+      <Table>
+        <TableHead>
+          <TableRow>
+            <TableCell></TableCell>
+            <TableCell>Name</TableCell>
+            <TableCell>Amount</TableCell>
+            <TableCell>Date</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {rows.map((row, index) => (
+            <TableRow
+              key={row.id}
+              draggable
+              onDragStart={handleDragStart(index)}
+              onDragOver={handleDragOver(index)}
+              onDrop={handleDrop}
+              style={{ cursor: "move" }}
+            >
+              <TableCell>
+                <IconButton>
+                  <DragIndicatorIcon />
+                </IconButton>
+              </TableCell>
+              <TableCell>{row.name}</TableCell>
+              <TableCell>{row.amount}</TableCell>
+              <TableCell>{row.date}</TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
   );
 };
 

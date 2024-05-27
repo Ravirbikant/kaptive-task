@@ -7,9 +7,12 @@ import {
   TableHead,
   TableRow,
   Paper,
+  IconButton,
 } from "@mui/material";
 import { TableVirtuoso } from "react-virtuoso";
 import FinancialData from "../data/financialData.json";
+import DragIndicatorIcon from "@mui/icons-material/DragIndicator";
+import "./styles.css";
 
 const FinancialSummaryTable = () => {
   const [rows, setRows] = useState(FinancialData.Sheet1);
@@ -55,20 +58,15 @@ const FinancialSummaryTable = () => {
   };
 
   const fixedHeaderContent = () => (
-    <TableRow>
-      <TableCell style={{ width: "20px", border: "2px solid black" }}>
-        Move
-      </TableCell>
-      <TableCell style={{ width: "150px", border: "2px solid black" }}>
-        Overhead
-      </TableCell>
+    <TableRow
+      style={{ background: "#d2ddf3", color: "white", fontWeight: "bolder" }}
+    >
+      <TableCell style={{ width: "30px" }}></TableCell>
+      <TableCell style={{ width: "150px" }}>Overhead</TableCell>
       {Object.keys(rows[0])
         .filter((key) => key !== "Overhead")
         .map((month) => (
-          <TableCell
-            key={month}
-            style={{ width: "150px", border: "2px solid black" }}
-          >
+          <TableCell key={month} style={{ width: "150px" }}>
             {month}
           </TableCell>
         ))}
@@ -79,6 +77,7 @@ const FinancialSummaryTable = () => {
     <TableRow
       key={data.Overhead}
       draggable
+      className="test"
       onDragStart={handleDragStart(index)}
       onDragOver={handleDragOver(index)}
       onDrop={handleDrop(index)}
@@ -87,19 +86,20 @@ const FinancialSummaryTable = () => {
         backgroundColor: draggedRowIndex === index ? "green" : "inherit",
       }}
     >
-      <TableCell style={{ minWidth: "20px", border: "2px solid black" }}>
-        <span style={{ cursor: "move" }}>☰</span>
+      <TableCell
+        style={{ minWidth: "30px", display: "flex", alignItems: "center" }}
+      >
+        <IconButton>
+          <DragIndicatorIcon />
+        </IconButton>
       </TableCell>
-      <TableCell style={{ minWidth: "150px", border: "2px solid black" }}>
+      <TableCell style={{ minWidth: "150px", fontWeight: "600" }}>
         {data.Overhead}
       </TableCell>
       {Object.keys(data)
         .filter((key) => key !== "Overhead")
         .map((month) => (
-          <TableCell
-            key={month}
-            style={{ minWidth: "150px", border: "2px solid black" }}
-          >
+          <TableCell key={month} style={{ minWidth: "150px" }}>
             {data[month]}
           </TableCell>
         ))}
@@ -107,7 +107,7 @@ const FinancialSummaryTable = () => {
   );
 
   return (
-    <Paper style={{ height: 600, width: "100%" }}>
+    <Paper style={{ height: "500px", width: "100%" }}>
       <TableVirtuoso
         data={rows}
         components={VirtuosoTableComponents}

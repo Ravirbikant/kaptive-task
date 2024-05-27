@@ -7,74 +7,114 @@ import {
   TableHead,
   TableRow,
   Paper,
-  IconButton,
 } from "@mui/material";
-import DragIndicatorIcon from "@mui/icons-material/DragIndicator";
+import { TableVirtuoso } from "react-virtuoso";
+import FinancialData from "../data/financialData.json";
 
 const FinancialSummaryTable = () => {
-  const [rows, setRows] = useState([
-    { id: "1", name: "Item 1", amount: "$100", date: "2023-01-01" },
-    { id: "2", name: "Item 2", amount: "$200", date: "2023-02-01" },
-    { id: "3", name: "Item 3", amount: "$300", date: "2023-03-01" },
-    { id: "4", name: "Item 4", amount: "$400", date: "2023-04-01" },
-    { id: "5", name: "Item 5", amount: "$500", date: "2023-05-01" },
-  ]);
-
+  const [rows, setRows] = useState(FinancialData.Sheet1);
   const [draggedRowIndex, setDraggedRowIndex] = useState(null);
+  const [overIndex, setOverIndex] = useState(null);
 
   const handleDragStart = (index) => (event) => {
     setDraggedRowIndex(index);
     event.dataTransfer.effectAllowed = "move";
-    event.dataTransfer.setData("text/html", event.currentTarget);
+    event.dataTransfer.setData("text/plain", index);
   };
 
   const handleDragOver = (index) => (event) => {
     event.preventDefault();
+    setOverIndex(index);
+  };
+
+  const handleDrop = (index) => (event) => {
+    event.preventDefault();
     const newRows = [...rows];
     const draggedRow = newRows.splice(draggedRowIndex, 1)[0];
     newRows.splice(index, 0, draggedRow);
-    setDraggedRowIndex(index);
     setRows(newRows);
+    setDraggedRowIndex(null);
+    setOverIndex(null);
   };
 
-  const handleDrop = () => {
-    setDraggedRowIndex(null);
+  const VirtuosoTableComponents = {
+    Scroller: React.forwardRef((props, ref) => (
+      <TableContainer component={Paper} {...props} ref={ref} />
+    )),
+    Table: (props) => (
+      <Table
+        {...props}
+        sx={{ borderCollapse: "separate", tableLayout: "fixed" }}
+      />
+    ),
+    TableHead,
+    TableRow: ({ item: _item, ...props }) => <TableRow {...props} />,
+    TableBody: React.forwardRef((props, ref) => (
+      <TableBody {...props} ref={ref} />
+    )),
   };
+
+  const fixedHeaderContent = () => (
+    <TableRow>
+      <TableCell style={{ width: "20px", border: "2px solid black" }}>
+        Move
+      </TableCell>
+      <TableCell style={{ width: "150px", border: "2px solid black" }}>
+        Overhead
+      </TableCell>
+      {Object.keys(rows[0])
+        .filter((key) => key !== "Overhead")
+        .map((month) => (
+          <TableCell
+            key={month}
+            style={{ width: "150px", border: "2px solid black" }}
+          >
+            {month}
+          </TableCell>
+        ))}
+    </TableRow>
+  );
+
+  const rowContent = (index, data) => (
+    <TableRow
+      key={data.Overhead}
+      draggable
+      onDragStart={handleDragStart(index)}
+      onDragOver={handleDragOver(index)}
+      onDrop={handleDrop(index)}
+      style={{
+        cursor: "move",
+        backgroundColor: draggedRowIndex === index ? "green" : "inherit",
+      }}
+    >
+      <TableCell style={{ minWidth: "20px", border: "2px solid black" }}>
+        <span style={{ cursor: "move" }}>☰</span>
+      </TableCell>
+      <TableCell style={{ minWidth: "150px", border: "2px solid black" }}>
+        {data.Overhead}
+      </TableCell>
+      {Object.keys(data)
+        .filter((key) => key !== "Overhead")
+        .map((month) => (
+          <TableCell
+            key={month}
+            style={{ minWidth: "150px", border: "2px solid black" }}
+          >
+            {data[month]}
+          </TableCell>
+        ))}
+    </TableRow>
+  );
 
   return (
-    <TableContainer component={Paper}>
-      <Table>
-        <TableHead>
-          <TableRow>
-            <TableCell></TableCell>
-            <TableCell>Name</TableCell>
-            <TableCell>Amount</TableCell>
-            <TableCell>Date</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {rows.map((row, index) => (
-            <TableRow
-              key={row.id}
-              draggable
-              onDragStart={handleDragStart(index)}
-              onDragOver={handleDragOver(index)}
-              onDrop={handleDrop}
-              style={{ cursor: "move" }}
-            >
-              <TableCell>
-                <IconButton>
-                  <DragIndicatorIcon />
-                </IconButton>
-              </TableCell>
-              <TableCell>{row.name}</TableCell>
-              <TableCell>{row.amount}</TableCell>
-              <TableCell>{row.date}</TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
+    <Paper style={{ height: 600, width: "100%" }}>
+      <TableVirtuoso
+        data={rows}
+        components={VirtuosoTableComponents}
+        fixedHeaderContent={fixedHeaderContent}
+        itemContent={rowContent}
+      />
+    </Paper>
   );
 };
 

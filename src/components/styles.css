@@ -12,7 +12,14 @@
   background-color: #d2ddf3 !important;
   color: rgb(7, 7, 154) !important;
   font-weight: 600 !important;
+  display: flex;
+}
+
+.css-1ygcj2i-MuiTableCell-root p {
+  width: fit-content;
+  margin: auto;
 }
 
 .css-1ex1afd-MuiTableCell-root {
+  border: 0.5px solid rgba(128, 128, 128, 0.2) !important;
 }

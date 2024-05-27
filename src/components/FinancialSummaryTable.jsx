@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Table,
   TableBody,
@@ -8,16 +8,32 @@ import {
   TableRow,
   Paper,
   IconButton,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  RadioGroup,
+  FormControlLabel,
+  Radio,
+  Box,
 } from "@mui/material";
 import { TableVirtuoso } from "react-virtuoso";
 import FinancialData from "../data/financialData.json";
 import DragIndicatorIcon from "@mui/icons-material/DragIndicator";
 import "./styles.css";
 
+const conversionRates = {
+  EUR: 0.85,
+  GBP: 0.75,
+  USD: 1,
+};
+
 const FinancialSummaryTable = () => {
   const [rows, setRows] = useState(FinancialData.Sheet1);
   const [draggedRowIndex, setDraggedRowIndex] = useState(null);
   const [overIndex, setOverIndex] = useState(null);
+  const [currency, setCurrency] = useState("USD");
+  const [decimalPlaces, setDecimalPlaces] = useState(2);
 
   const handleDragStart = (index) => (event) => {
     setDraggedRowIndex(index);
@@ -38,6 +54,19 @@ const FinancialSummaryTable = () => {
     setRows(newRows);
     setDraggedRowIndex(null);
     setOverIndex(null);
+  };
+
+  const handleCurrencyChange = (event) => {
+    setCurrency(event.target.value);
+  };
+
+  const handleDecimalPlacesChange = (event) => {
+    setDecimalPlaces(parseInt(event.target.value));
+  };
+
+  const formatValue = (value) => {
+    const convertedValue = value * conversionRates[currency];
+    return convertedValue.toFixed(decimalPlaces);
   };
 
   const VirtuosoTableComponents = {
@@ -62,12 +91,14 @@ const FinancialSummaryTable = () => {
       style={{ background: "#d2ddf3", color: "white", fontWeight: "bolder" }}
     >
       <TableCell style={{ width: "30px" }}></TableCell>
-      <TableCell style={{ width: "150px" }}>Overhead</TableCell>
+      <TableCell style={{ width: "150px" }}>
+        <p>Overhead</p>
+      </TableCell>
       {Object.keys(rows[0])
         .filter((key) => key !== "Overhead")
         .map((month) => (
           <TableCell key={month} style={{ width: "150px" }}>
-            {month}
+            <p>{month}</p>
           </TableCell>
         ))}
     </TableRow>
@@ -100,21 +131,49 @@ const FinancialSummaryTable = () => {
         .filter((key) => key !== "Overhead")
         .map((month) => (
           <TableCell key={month} style={{ minWidth: "150px" }}>
-            {data[month]}
+            {formatValue(data[month])}
           </TableCell>
         ))}
     </TableRow>
   );
 
   return (
-    <Paper style={{ height: "500px", width: "100%" }}>
-      <TableVirtuoso
-        data={rows}
-        components={VirtuosoTableComponents}
-        fixedHeaderContent={fixedHeaderContent}
-        itemContent={rowContent}
-      />
-    </Paper>
+    <Box>
+      <Box sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
+        <FormControl variant="outlined" sx={{ minWidth: 120 }}>
+          <InputLabel id="currency-select-label">Currency</InputLabel>
+          <Select
+            labelId="currency-select-label"
+            value={currency}
+            onChange={handleCurrencyChange}
+            label="Currency"
+          >
+            <MenuItem value="USD">USD</MenuItem>
+            <MenuItem value="EUR">EUR</MenuItem>
+            <MenuItem value="GBP">GBP</MenuItem>
+          </Select>
+        </FormControl>
+        <FormControl component="fieldset">
+          <RadioGroup
+            row
+            value={decimalPlaces}
+            onChange={handleDecimalPlacesChange}
+          >
+            <FormControlLabel value={0} control={<Radio />} label="0" />
+            <FormControlLabel value={1} control={<Radio />} label="1" />
+            <FormControlLabel value={2} control={<Radio />} label="2" />
+          </RadioGroup>
+        </FormControl>
+      </Box>
+      <Paper style={{ height: "500px", width: "100%" }}>
+        <TableVirtuoso
+          data={rows}
+          components={VirtuosoTableComponents}
+          fixedHeaderContent={fixedHeaderContent}
+          itemContent={rowContent}
+        />
+      </Paper>
+    </Box>
   );
 };
 

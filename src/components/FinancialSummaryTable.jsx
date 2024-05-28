@@ -104,6 +104,23 @@ const FinancialSummaryTable = () => {
     </TableRow>
   );
 
+  const CustomRadio = (props) => (
+    <Radio
+      {...props}
+      sx={{
+        "&.Mui-checked": {
+          color: "rgb(7, 7, 154)",
+          "& + .MuiFormControlLabel-label": {
+            color: "rgb(7, 7, 154)",
+          },
+        },
+        "&.Mui-checked.MuiRadio-root": {
+          backgroundColor: "#d2ddf3",
+        },
+      }}
+    />
+  );
+
   const rowContent = (index, data) => (
     <TableRow
       key={data.Overhead}
@@ -139,29 +156,44 @@ const FinancialSummaryTable = () => {
 
   return (
     <Box>
-      <Box sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
-        <FormControl variant="outlined" sx={{ minWidth: 120 }}>
-          <InputLabel id="currency-select-label">Currency</InputLabel>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "flex-end",
+          alignItems: "center",
+          mb: 2,
+          marginTop: "20px",
+        }}
+      >
+        <FormControl
+          sx={{ width: "70px", marginRight: "20px", border: "none" }}
+        >
           <Select
-            labelId="currency-select-label"
             value={currency}
             onChange={handleCurrencyChange}
-            label="Currency"
+            displayEmpty
+            inputProps={{ "aria-label": "Without label" }}
+            sx={{
+              background: "#d2ddf3",
+              color: "rgb(7, 7, 154)",
+              height: "40px",
+            }}
           >
             <MenuItem value="USD">USD</MenuItem>
             <MenuItem value="EUR">EUR</MenuItem>
             <MenuItem value="GBP">GBP</MenuItem>
           </Select>
         </FormControl>
+
         <FormControl component="fieldset">
           <RadioGroup
             row
             value={decimalPlaces}
             onChange={handleDecimalPlacesChange}
           >
-            <FormControlLabel value={0} control={<Radio />} label="0" />
-            <FormControlLabel value={1} control={<Radio />} label="1" />
-            <FormControlLabel value={2} control={<Radio />} label="2" />
+            <FormControlLabel value={0} control={<CustomRadio />} label="0" />
+            <FormControlLabel value={1} control={<CustomRadio />} label="1" />
+            <FormControlLabel value={2} control={<CustomRadio />} label="2" />
           </RadioGroup>
         </FormControl>
       </Box>

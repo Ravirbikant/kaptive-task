@@ -23,3 +23,7 @@
 .css-1ex1afd-MuiTableCell-root {
   border: 0.5px solid rgba(128, 128, 128, 0.2) !important;
 }
+
+.css-11u53oe-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input.css-11u53oe-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input.css-11u53oe-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input {
+  padding-left: 10px !important;
+}

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   Table,
   TableBody,
@@ -12,9 +12,12 @@ import {
 
 import FinancialData from "../data/financialData.json";
 import DragIndicatorIcon from "@mui/icons-material/DragIndicator";
+import { throttle } from "lodash";
 
 const FinancialSummaryTable = () => {
   const [rows, setRows] = useState(FinancialData.Sheet1);
+  const [containerHeight, setContainerHeight] = useState(0);
+  const [scrollPosition, setScrollPosition] = useState(0);
 
   const months = [
     "Jan",
@@ -31,9 +34,103 @@ const FinancialSummaryTable = () => {
     "December",
   ];
 
+  const rowHeight = 40;
+  const gap = 10;
+  const isVirtualizationEnabled = true;
+
+  const containerRef = useRef(null);
+
+  const onScroll = useMemo(
+    () =>
+      throttle(
+        (e) => {
+          setScrollPosition(e.target.scrollTop);
+        },
+        50,
+        { leading: false }
+      ),
+    []
+  );
+
+  useEffect(() => {
+    const handleResize = () => {
+      console.log(containerRef.current.clientHeight);
+      setContainerHeight(containerRef.current.clientHeight);
+    };
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+
+  const visibleChildren = useMemo(() => {
+    if (!isVirtualizationEnabled) {
+      return rows.map((row) => (
+        <TableRow key={row.Overhead}>
+          <TableCell component="th" scope="row">
+            {row.Overhead}
+          </TableCell>
+          {months.map((month) => (
+            <TableCell key={month} align="right">
+              {row[month]}
+            </TableCell>
+          ))}
+        </TableRow>
+      ));
+    }
+
+    const startIndex = Math.max(
+      Math.floor(scrollPosition / (rowHeight + gap)) - 2,
+      0
+    );
+    const endIndex = Math.min(
+      Math.ceil((scrollPosition + containerHeight) / (rowHeight + gap)) + 2,
+      rows.length
+    );
+
+    return rows.slice(startIndex, endIndex).map((row, index) => (
+      <TableRow
+        key={startIndex + index}
+        style={{
+          position: "absolute",
+          top: (startIndex + index) * (rowHeight + gap),
+          height: rowHeight,
+          left: 0,
+          right: 0,
+          lineHeight: `${rowHeight}px`,
+        }}
+      >
+        <TableCell component="th" scope="row">
+          {row.Overhead}
+        </TableCell>
+        {months.map((month) => (
+          <TableCell key={month} align="right">
+            {row[month]}
+          </TableCell>
+        ))}
+      </TableRow>
+    ));
+  }, [
+    rows,
+    containerHeight,
+    rowHeight,
+    scrollPosition,
+    gap,
+    isVirtualizationEnabled,
+  ]);
+
   return (
-    <TableContainer component={Paper}>
-      <Table>
+    <TableContainer
+      component={Paper}
+      onScroll={onScroll}
+      style={{
+        overflowY: "scroll",
+        height: "500px", // Fixed height for demonstration
+      }}
+      ref={containerRef}
+    >
+      <Table stickyHeader aria-label="sticky table">
         <TableHead>
           <TableRow>
             <TableCell>Overhead</TableCell>
@@ -45,32 +142,15 @@ const FinancialSummaryTable = () => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {rows.map((row) => (
-            <TableRow key={row.Overhead}>
-              <TableCell component="th" scope="row">
-                {row.Overhead}
-              </TableCell>
-              {months.map((month) => (
-                <TableCell key={month} align="right">
-                  {row[month]}
-                </TableCell>
-              ))}
-            </TableRow>
-          ))}
+          <div
+            style={{
+              height: rows.length * (rowHeight + gap),
+              position: "relative",
+            }}
+          >
+            {visibleChildren}
+          </div>
         </TableBody>
-        <TableFooter>
-          <TableRow>
-            <TableCell>Total</TableCell>
-            {months.map((month) => {
-              const total = rows.reduce((sum, row) => sum + row[month], 0);
-              return (
-                <TableCell key={month} align="right">
-                  {total.toLocaleString()}
-                </TableCell>
-              );
-            })}
-          </TableRow>
-        </TableFooter>
       </Table>
     </TableContainer>
   );

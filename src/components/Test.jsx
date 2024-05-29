@@ -1,5 +1,14 @@
 import React, { useState, useMemo, useRef, useEffect } from "react";
 import { throttle } from "lodash";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+} from "@mui/material";
 
 const FinancialSummaryTable = () => {
   const rowHeight = 40;
@@ -31,7 +40,6 @@ const FinancialSummaryTable = () => {
 
   useEffect(() => {
     const handleResize = () => {
-      console.log(containerRef.current.clientHeight);
       setContainerHeight(containerRef.current.clientHeight);
     };
     handleResize();
@@ -44,19 +52,9 @@ const FinancialSummaryTable = () => {
   const visibleChildren = useMemo(() => {
     if (!isVirtualizationEnabled) {
       return children.map((child, index) => (
-        <div
-          key={index}
-          style={{
-            position: "absolute",
-            top: index * (rowHeight + gap),
-            height: rowHeight,
-            left: 0,
-            right: 0,
-            // lineHeight: `${rowHeight}px`,
-          }}
-        >
-          {child}
-        </div>
+        <TableRow key={index}>
+          <TableCell>{child}</TableCell>
+        </TableRow>
       ));
     }
 
@@ -70,7 +68,7 @@ const FinancialSummaryTable = () => {
     );
 
     return children.slice(startIndex, endIndex).map((child, index) => (
-      <div
+      <TableRow
         key={startIndex + index}
         style={{
           position: "absolute",
@@ -81,8 +79,8 @@ const FinancialSummaryTable = () => {
           lineHeight: `${rowHeight}px`,
         }}
       >
-        {child}
-      </div>
+        <TableCell>{child}</TableCell>
+      </TableRow>
     ));
   }, [
     children,
@@ -94,25 +92,33 @@ const FinancialSummaryTable = () => {
   ]);
 
   return (
-    <div
+    <TableContainer
+      component={Paper}
       onScroll={onScroll}
       style={{
         overflowY: "scroll",
-        position: "relative",
         height: "400px", // Fixed height for demonstration
-        border: "1px solid #ccc", // Add border for visualization
       }}
       ref={containerRef}
     >
-      <div
-        style={{
-          height: children.length * (rowHeight + gap), // Set height of virtualized window (Did not understood the use)
-          position: "relative", // Ensure correct positioning of children
-        }}
-      >
-        {visibleChildren}
-      </div>
-    </div>
+      <Table stickyHeader aria-label="sticky table">
+        <TableHead>
+          <TableRow>
+            <TableCell>Row</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          <div
+            style={{
+              height: children.length * (rowHeight + gap),
+              position: "relative",
+            }}
+          >
+            {visibleChildren}
+          </div>
+        </TableBody>
+      </Table>
+    </TableContainer>
   );
 };
 

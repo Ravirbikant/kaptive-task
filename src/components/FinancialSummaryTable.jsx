@@ -1,5 +1,3 @@
-// src/components/FinancialSummaryTable.jsx
-
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   Table,
@@ -9,6 +7,13 @@ import {
   TableHead,
   TableRow,
   Paper,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  RadioGroup,
+  FormControlLabel,
+  Radio,
 } from "@mui/material";
 import FinancialData from "../data/financialData.json";
 import DragIndicatorIcon from "@mui/icons-material/DragIndicator";
@@ -21,6 +26,16 @@ const FinancialSummaryTable = () => {
   const [scrollPosition, setScrollPosition] = useState(0);
   const [draggedRowIndex, setDraggedRowIndex] = useState(null);
   const [overIndex, setOverIndex] = useState(null);
+  const [currency, setCurrency] = useState("USD");
+  const [decimalPlaces, setDecimalPlaces] = useState(2);
+
+  const handleCurrencyChange = (event) => {
+    setCurrency(event.target.value);
+  };
+
+  const handleDecimalPlacesChange = (event) => {
+    setDecimalPlaces(parseInt(event.target.value));
+  };
 
   const handleDragStart = (index) => (event) => {
     setDraggedRowIndex(index);
@@ -57,7 +72,7 @@ const FinancialSummaryTable = () => {
   ];
 
   const rowHeight = 40;
-  const gap = 10;
+  const gap = 0;
   const isVirtualizationEnabled = true;
 
   const containerRef = useRef(null);
@@ -85,6 +100,16 @@ const FinancialSummaryTable = () => {
     };
   }, []);
 
+  const formatCurrency = (value) => {
+    const options = {
+      style: "currency",
+      currency,
+      minimumFractionDigits: decimalPlaces,
+      maximumFractionDigits: decimalPlaces,
+    };
+    return new Intl.NumberFormat("en-US", options).format(value);
+  };
+
   const visibleChildren = useMemo(() => {
     if (!isVirtualizationEnabled) {
       return rows.map((row, index) => (
@@ -104,7 +129,7 @@ const FinancialSummaryTable = () => {
           <TableCell>{row.Overhead}</TableCell>
           {months.map((month) => (
             <TableCell key={month} align="right">
-              {row[month]}
+              {formatCurrency(row[month])}
             </TableCell>
           ))}
         </TableRow>
@@ -146,7 +171,7 @@ const FinancialSummaryTable = () => {
         <TableCell style={{ minWidth: "200px" }}>{row.Overhead}</TableCell>
         {months.map((month) => (
           <TableCell key={month} align="right" style={{ minWidth: "200px" }}>
-            {row[month]}
+            {formatCurrency(row[month])}
           </TableCell>
         ))}
       </TableRow>
@@ -159,43 +184,80 @@ const FinancialSummaryTable = () => {
     gap,
     isVirtualizationEnabled,
     draggedRowIndex,
+    currency,
+    decimalPlaces,
   ]);
 
   return (
-    <TableContainer
-      component={Paper}
-      onScroll={onScroll}
-      style={{
-        overflowY: "scroll",
-        height: "500px",
-        position: "relative",
-      }}
-      ref={containerRef}
-    >
-      <Table stickyHeader aria-label="sticky table">
-        <TableHead>
-          <TableRow>
-            <TableCell style={{ width: "50px" }}>Drag</TableCell>
-            <TableCell style={{ width: "200px" }}>Overhead</TableCell>
-            {months.map((month) => (
-              <TableCell key={month} align="right" style={{ width: "200px" }}>
-                {month}
-              </TableCell>
-            ))}
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          <div
-            style={{
-              height: rows.length * (rowHeight + gap),
-              position: "relative",
-            }}
+    <div>
+      <div className="controls">
+        <FormControl variant="outlined" style={{ marginRight: "20px" }}>
+          <InputLabel id="currency-label">Currency</InputLabel>
+          <Select
+            labelId="currency-label"
+            id="currency-select"
+            value={currency}
+            onChange={handleCurrencyChange}
+            label="Currency"
           >
-            {visibleChildren}
-          </div>
-        </TableBody>
-      </Table>
-    </TableContainer>
+            <MenuItem value="USD">USD</MenuItem>
+            <MenuItem value="EUR">EUR</MenuItem>
+            <MenuItem value="GBP">GBP</MenuItem>
+          </Select>
+        </FormControl>
+        <FormControl component="fieldset">
+          <RadioGroup
+            row
+            aria-label="decimal-places"
+            name="decimal-places"
+            value={decimalPlaces}
+            onChange={handleDecimalPlacesChange}
+          >
+            <FormControlLabel value={0} control={<Radio />} label="0 Decimal" />
+            <FormControlLabel value={1} control={<Radio />} label="1 Decimal" />
+            <FormControlLabel
+              value={2}
+              control={<Radio />}
+              label="2 Decimals"
+            />
+          </RadioGroup>
+        </FormControl>
+      </div>
+      <TableContainer
+        component={Paper}
+        onScroll={onScroll}
+        style={{
+          overflowY: "scroll",
+          height: "500px",
+          position: "relative",
+        }}
+        ref={containerRef}
+      >
+        <Table stickyHeader aria-label="sticky table">
+          <TableHead>
+            <TableRow>
+              <TableCell style={{ width: "50px" }}>Drag</TableCell>
+              <TableCell style={{ width: "200px" }}>Overhead</TableCell>
+              {months.map((month) => (
+                <TableCell key={month} align="right" style={{ width: "200px" }}>
+                  {month}
+                </TableCell>
+              ))}
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            <div
+              style={{
+                height: rows.length * (rowHeight + gap),
+                position: "relative",
+              }}
+            >
+              {visibleChildren}
+            </div>
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </div>
   );
 };
 

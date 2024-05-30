@@ -1,3 +1,5 @@
+// src/components/FinancialSummaryTable.jsx
+
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   Table,
@@ -9,7 +11,6 @@ import {
   Paper,
   TableFooter,
 } from "@mui/material";
-
 import FinancialData from "../data/financialData.json";
 import DragIndicatorIcon from "@mui/icons-material/DragIndicator";
 import { throttle } from "lodash";
@@ -24,14 +25,24 @@ const FinancialSummaryTable = () => {
   const [currency, setCurrency] = useState("USD");
   const [decimalPlaces, setDecimalPlaces] = useState(2);
 
-  const handleDragStart = (index) => (event) => {};
+  const handleDragStart = (index) => (event) => {
+    setDraggedRowIndex(index);
+    event.dataTransfer.effectAllowed = "move";
+  };
 
   const handleDragOver = (index) => (event) => {
     event.preventDefault();
     setOverIndex(index);
   };
 
-  const handleDrop = (index) => (event) => {};
+  const handleDrop = (index) => (event) => {
+    const updatedRows = [...rows];
+    const [draggedRow] = updatedRows.splice(draggedRowIndex, 1);
+    updatedRows.splice(index, 0, draggedRow);
+    setRows(updatedRows);
+    setDraggedRowIndex(null);
+    setOverIndex(null);
+  };
 
   const handleCurrencyChange = (event) => {
     setCurrency(event.target.value);
@@ -72,7 +83,6 @@ const FinancialSummaryTable = () => {
 
   useEffect(() => {
     const handleResize = () => {
-      console.log(containerRef.current.clientHeight);
       setContainerHeight(containerRef.current.clientHeight);
     };
     handleResize();
@@ -84,11 +94,21 @@ const FinancialSummaryTable = () => {
 
   const visibleChildren = useMemo(() => {
     if (!isVirtualizationEnabled) {
-      return rows.map((row) => (
-        <TableRow key={row.Overhead}>
+      return rows.map((row, index) => (
+        <TableRow
+          key={row.Overhead}
+          draggable
+          onDragStart={handleDragStart(index)}
+          onDragOver={handleDragOver(index)}
+          onDrop={handleDrop(index)}
+          style={{
+            backgroundColor: draggedRowIndex === index ? "green" : "inherit",
+          }}
+        >
           <TableCell component="th" scope="row">
-            {row.Overhead}
+            <DragIndicatorIcon style={{ cursor: "move" }} />
           </TableCell>
+          <TableCell>{row.Overhead}</TableCell>
           {months.map((month) => (
             <TableCell key={month} align="right">
               {row[month]}
@@ -109,14 +129,14 @@ const FinancialSummaryTable = () => {
 
     return rows.slice(startIndex, endIndex).map((row, index) => (
       <TableRow
+        key={row.Overhead}
         draggable
-        onDragStart={handleDragStart(index)}
-        onDragOver={handleDragOver(index)}
-        onDrop={handleDrop(index)}
-        key={startIndex + index}
+        onDragStart={handleDragStart(startIndex + index)}
+        onDragOver={handleDragOver(startIndex + index)}
+        onDrop={handleDrop(startIndex + index)}
         style={{
-          cursor: "move",
-          backgroundColor: draggedRowIndex === index ? "green" : "inherit",
+          backgroundColor:
+            draggedRowIndex === startIndex + index ? "green" : "inherit",
           position: "absolute",
           top: (startIndex + index) * (rowHeight + gap),
           height: rowHeight,
@@ -125,9 +145,10 @@ const FinancialSummaryTable = () => {
           lineHeight: `${rowHeight}px`,
         }}
       >
-        <TableCell component="th" scope="row">
-          {row.Overhead}
+        <TableCell>
+          <DragIndicatorIcon style={{ cursor: "move" }} />
         </TableCell>
+        <TableCell>{row.Overhead}</TableCell>
         {months.map((month) => (
           <TableCell key={month} align="right">
             {row[month]}
@@ -142,6 +163,7 @@ const FinancialSummaryTable = () => {
     scrollPosition,
     gap,
     isVirtualizationEnabled,
+    draggedRowIndex,
   ]);
 
   return (
@@ -151,12 +173,14 @@ const FinancialSummaryTable = () => {
       style={{
         overflowY: "scroll",
         height: "500px", // Fixed height for demonstration
+        position: "relative",
       }}
       ref={containerRef}
     >
       <Table stickyHeader aria-label="sticky table">
         <TableHead>
           <TableRow>
+            <TableCell>Drag</TableCell>
             <TableCell>Overhead</TableCell>
             {months.map((month) => (
               <TableCell key={month} align="right">

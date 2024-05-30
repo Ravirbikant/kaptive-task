@@ -9,7 +9,6 @@ import {
   TableHead,
   TableRow,
   Paper,
-  TableFooter,
 } from "@mui/material";
 import FinancialData from "../data/financialData.json";
 import DragIndicatorIcon from "@mui/icons-material/DragIndicator";
@@ -22,8 +21,6 @@ const FinancialSummaryTable = () => {
   const [scrollPosition, setScrollPosition] = useState(0);
   const [draggedRowIndex, setDraggedRowIndex] = useState(null);
   const [overIndex, setOverIndex] = useState(null);
-  const [currency, setCurrency] = useState("USD");
-  const [decimalPlaces, setDecimalPlaces] = useState(2);
 
   const handleDragStart = (index) => (event) => {
     setDraggedRowIndex(index);
@@ -42,10 +39,6 @@ const FinancialSummaryTable = () => {
     setRows(updatedRows);
     setDraggedRowIndex(null);
     setOverIndex(null);
-  };
-
-  const handleCurrencyChange = (event) => {
-    setCurrency(event.target.value);
   };
 
   const months = [
@@ -143,14 +136,16 @@ const FinancialSummaryTable = () => {
           left: 0,
           right: 0,
           lineHeight: `${rowHeight}px`,
+          display: "flex",
+          width: "100%",
         }}
       >
-        <TableCell>
+        <TableCell style={{ width: "50px" }}>
           <DragIndicatorIcon style={{ cursor: "move" }} />
         </TableCell>
-        <TableCell>{row.Overhead}</TableCell>
+        <TableCell style={{ minWidth: "200px" }}>{row.Overhead}</TableCell>
         {months.map((month) => (
-          <TableCell key={month} align="right">
+          <TableCell key={month} align="right" style={{ minWidth: "200px" }}>
             {row[month]}
           </TableCell>
         ))}
@@ -172,7 +167,7 @@ const FinancialSummaryTable = () => {
       onScroll={onScroll}
       style={{
         overflowY: "scroll",
-        height: "500px", // Fixed height for demonstration
+        height: "500px",
         position: "relative",
       }}
       ref={containerRef}
@@ -180,10 +175,10 @@ const FinancialSummaryTable = () => {
       <Table stickyHeader aria-label="sticky table">
         <TableHead>
           <TableRow>
-            <TableCell>Drag</TableCell>
-            <TableCell>Overhead</TableCell>
+            <TableCell style={{ width: "50px" }}>Drag</TableCell>
+            <TableCell style={{ width: "200px" }}>Overhead</TableCell>
             {months.map((month) => (
-              <TableCell key={month} align="right">
+              <TableCell key={month} align="right" style={{ width: "200px" }}>
                 {month}
               </TableCell>
             ))}

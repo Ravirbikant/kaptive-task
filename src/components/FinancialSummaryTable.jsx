@@ -13,11 +13,29 @@ import {
 import FinancialData from "../data/financialData.json";
 import DragIndicatorIcon from "@mui/icons-material/DragIndicator";
 import { throttle } from "lodash";
+import "./styles.css";
 
 const FinancialSummaryTable = () => {
   const [rows, setRows] = useState(FinancialData.Sheet1);
   const [containerHeight, setContainerHeight] = useState(0);
   const [scrollPosition, setScrollPosition] = useState(0);
+  const [draggedRowIndex, setDraggedRowIndex] = useState(null);
+  const [overIndex, setOverIndex] = useState(null);
+  const [currency, setCurrency] = useState("USD");
+  const [decimalPlaces, setDecimalPlaces] = useState(2);
+
+  const handleDragStart = (index) => (event) => {};
+
+  const handleDragOver = (index) => (event) => {
+    event.preventDefault();
+    setOverIndex(index);
+  };
+
+  const handleDrop = (index) => (event) => {};
+
+  const handleCurrencyChange = (event) => {
+    setCurrency(event.target.value);
+  };
 
   const months = [
     "Jan",
@@ -91,8 +109,14 @@ const FinancialSummaryTable = () => {
 
     return rows.slice(startIndex, endIndex).map((row, index) => (
       <TableRow
+        draggable
+        onDragStart={handleDragStart(index)}
+        onDragOver={handleDragOver(index)}
+        onDrop={handleDrop(index)}
         key={startIndex + index}
         style={{
+          cursor: "move",
+          backgroundColor: draggedRowIndex === index ? "green" : "inherit",
           position: "absolute",
           top: (startIndex + index) * (rowHeight + gap),
           height: rowHeight,

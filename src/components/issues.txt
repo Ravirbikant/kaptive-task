@@ -2,3 +2,7 @@
 2. A4
 3. Draggable
 4. Right Data
+5. Currency conversion
+6. Virtualisation 10 rows only
+7. Code Quality
+8. Hosting, Revising - Tommorrow

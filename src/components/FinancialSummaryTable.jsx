@@ -14,6 +14,7 @@ import {
   RadioGroup,
   FormControlLabel,
   Radio,
+  Box,
 } from "@mui/material";
 import FinancialData from "../data/financialData.json";
 import DragIndicatorIcon from "@mui/icons-material/DragIndicator";
@@ -165,12 +166,36 @@ const FinancialSummaryTable = () => {
           width: "100%",
         }}
       >
-        <TableCell style={{ width: "50px" }}>
+        <TableCell
+          style={{
+            minWidth: "50px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
           <DragIndicatorIcon style={{ cursor: "move" }} />
         </TableCell>
-        <TableCell style={{ minWidth: "200px" }}>{row.Overhead}</TableCell>
+        <TableCell
+          style={{
+            minWidth: "200px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          {row.Overhead}
+        </TableCell>
         {months.map((month) => (
-          <TableCell key={month} align="right" style={{ minWidth: "200px" }}>
+          <TableCell
+            key={month}
+            style={{
+              minWidth: "200px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
             {formatCurrency(row[month])}
           </TableCell>
         ))}
@@ -189,75 +214,107 @@ const FinancialSummaryTable = () => {
   ]);
 
   return (
-    <div>
-      <div className="controls">
-        <FormControl variant="outlined" style={{ marginRight: "20px" }}>
-          <InputLabel id="currency-label">Currency</InputLabel>
+    <Box>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "flex-end",
+          alignItems: "center",
+          mb: 2,
+          marginTop: "20px",
+        }}
+      >
+        <FormControl
+          sx={{ width: "70px", marginRight: "20px", border: "none" }}
+        >
           <Select
-            labelId="currency-label"
-            id="currency-select"
             value={currency}
             onChange={handleCurrencyChange}
-            label="Currency"
+            displayEmpty
+            inputProps={{ "aria-label": "Without label" }}
+            sx={{
+              background: "lightGreen",
+              color: "green",
+              height: "40px",
+            }}
           >
             <MenuItem value="USD">USD</MenuItem>
             <MenuItem value="EUR">EUR</MenuItem>
             <MenuItem value="GBP">GBP</MenuItem>
           </Select>
         </FormControl>
+
         <FormControl component="fieldset">
           <RadioGroup
             row
-            aria-label="decimal-places"
-            name="decimal-places"
             value={decimalPlaces}
             onChange={handleDecimalPlacesChange}
           >
-            <FormControlLabel value={0} control={<Radio />} label="0 Decimal" />
-            <FormControlLabel value={1} control={<Radio />} label="1 Decimal" />
-            <FormControlLabel
-              value={2}
-              control={<Radio />}
-              label="2 Decimals"
-            />
+            <FormControlLabel value={0} control={<Radio />} label="0" />
+            <FormControlLabel value={1} control={<Radio />} label="1" />
+            <FormControlLabel value={2} control={<Radio />} label="2" />
           </RadioGroup>
         </FormControl>
-      </div>
-      <TableContainer
-        component={Paper}
-        onScroll={onScroll}
-        style={{
-          overflowY: "scroll",
-          height: "500px",
-          position: "relative",
-        }}
-        ref={containerRef}
-      >
-        <Table stickyHeader aria-label="sticky table">
-          <TableHead>
-            <TableRow>
-              <TableCell style={{ width: "50px" }}>Drag</TableCell>
-              <TableCell style={{ width: "200px" }}>Overhead</TableCell>
-              {months.map((month) => (
-                <TableCell key={month} align="right" style={{ width: "200px" }}>
-                  {month}
+      </Box>
+
+      <Paper style={{ height: "500px", width: "100%" }}>
+        <TableContainer
+          component={Paper}
+          onScroll={onScroll}
+          style={{
+            overflowY: "scroll",
+            height: "500px",
+            position: "relative",
+            border: "1px solid #ddd",
+            borderRadius: "4px",
+          }}
+          ref={containerRef}
+        >
+          <Table stickyHeader aria-label="sticky table">
+            <TableHead>
+              <TableRow style={{ background: "orange" }}>
+                <TableCell
+                  style={{
+                    minWidth: "50px",
+                    fontWeight: "bold",
+                  }}
+                ></TableCell>
+                <TableCell
+                  style={{
+                    minWidth: "200px",
+                    fontWeight: "bold",
+                  }}
+                >
+                  <p>Overhead</p>
                 </TableCell>
-              ))}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            <div
-              style={{
-                height: rows.length * (rowHeight + gap),
-                position: "relative",
-              }}
-            >
-              {visibleChildren}
-            </div>
-          </TableBody>
-        </Table>
-      </TableContainer>
-    </div>
+                {months.map((month) => (
+                  <TableCell
+                    key={month}
+                    style={{
+                      minWidth: "200px",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    <p>{month}</p>
+                  </TableCell>
+                ))}
+              </TableRow>
+            </TableHead>
+
+            <TableBody>
+              <div
+                style={{
+                  height: rows.length * (rowHeight + gap),
+                  position: "relative",
+                }}
+              >
+                {visibleChildren}
+              </div>
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Paper>
+    </Box>
   );
 };
 

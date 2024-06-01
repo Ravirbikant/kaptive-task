@@ -25,11 +25,11 @@
 }
 
 .css-1ygcj2i-MuiTableCell-root {
-  background-color: #d2ddf3 !important;
+  background-color: #d2ddf3;
   color: rgb(7, 7, 154) !important;
   font-weight: 600 !important;
   display: flex;
-  border: 0.5px solid rgba(128, 128, 128, 0.2) !important;
+  border: 0.5px solid rgba(128, 128, 128, 0.2);
 }
 
 .css-1ygcj2i-MuiTableCell-root p {
@@ -38,10 +38,10 @@
 }
 
 .css-1ex1afd-MuiTableCell-root {
-  border: 0.5px solid rgba(128, 128, 128, 0.2) !important;
+  border: 0.5px solid rgba(128, 128, 128, 0.2);
 }
 
-.css-11u53oe-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input.css-11u53oe-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input.css-11u53oe-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input {
+.css-cnr1g6-MuiInputBase-root-MuiOutlinedInput-root-MuiSelect-root {
   padding-left: 10px !important;
 }
 

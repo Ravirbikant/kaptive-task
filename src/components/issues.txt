@@ -1,4 +1,6 @@
 4. Design improvement*
 Print*
-6. Improve code
+6. Improve code*
 7. Proper presentation - 6 PM
+
+Width Vs MinWidth

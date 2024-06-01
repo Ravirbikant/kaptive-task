@@ -117,16 +117,11 @@ const FinancialSummaryTable = () => {
 
   const rowContent = (index, data) => (
     <TableRow
-      id={data.Overhead}
       key={data.Overhead + index}
       draggable
-      className="test"
       onDragStart={handleDragStart(index)}
       onDragOver={handleDragOver(index)}
       onDrop={handleDrop(index)}
-      style={{
-        cursor: "move",
-      }}
       sx={{
         cursor: "move",
         backgroundColor: index % 2 === 0 ? "rgb(235, 235, 235)" : "inherit",
@@ -161,9 +156,7 @@ const FinancialSummaryTable = () => {
           alignItems: "center",
         }}
       >
-        <FormControl
-          sx={{ width: "70px", marginRight: "20px", border: "none" }}
-        >
+        <FormControl sx={{ width: "70px" }}>
           <Select
             value={currency}
             onChange={handleCurrencyChange}

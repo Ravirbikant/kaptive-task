@@ -15,6 +15,7 @@ import {
   FormControlLabel,
   Radio,
   Box,
+  FormLabel,
 } from "@mui/material";
 import { TableVirtuoso } from "react-virtuoso";
 import FinancialData from "../data/financialData.json";
@@ -22,8 +23,8 @@ import DragIndicatorIcon from "@mui/icons-material/DragIndicator";
 import "./styles.css";
 
 const conversionRates = {
-  EUR: 0.85,
-  GBP: 0.75,
+  EUR: 0.92,
+  GBP: 0.79,
   USD: 1,
 };
 
@@ -42,10 +43,10 @@ const FinancialSummaryTable = () => {
       setIsPrinting(event.matches);
     };
 
-    mediaQueryList.addListener(handlePrint);
+    mediaQueryList.addEventListener("change", handlePrint);
 
     return () => {
-      mediaQueryList.removeListener(handlePrint);
+      mediaQueryList.removeEventListener("change", handlePrint);
     };
   }, []);
 
@@ -99,9 +100,7 @@ const FinancialSummaryTable = () => {
   };
 
   const fixedHeaderContent = () => (
-    <TableRow
-      style={{ background: "#d2ddf3", color: "white", fontWeight: "bolder" }}
-    >
+    <TableRow>
       <TableCell style={{ width: "30px" }}></TableCell>
       <TableCell style={{ width: "150px" }}>
         <p>Overhead</p>
@@ -127,7 +126,10 @@ const FinancialSummaryTable = () => {
       onDrop={handleDrop(index)}
       style={{
         cursor: "move",
-        backgroundColor: draggedRowIndex === index ? "green" : "inherit",
+      }}
+      sx={{
+        cursor: "move",
+        backgroundColor: index % 2 === 0 ? "rgb(235, 235, 235)" : "inherit",
       }}
     >
       <TableCell
@@ -157,8 +159,6 @@ const FinancialSummaryTable = () => {
           display: "flex",
           justifyContent: "flex-end",
           alignItems: "center",
-          mb: 2,
-          marginTop: "20px",
         }}
       >
         <FormControl
@@ -181,9 +181,14 @@ const FinancialSummaryTable = () => {
           </Select>
         </FormControl>
 
-        <FormControl component="fieldset">
+        <FormControl>
+          <FormLabel id="demo-row-radio-buttons-group-label">
+            Decimals
+          </FormLabel>
           <RadioGroup
             row
+            aria-labelledby="demo-row-radio-buttons-group-label"
+            name="row-radio-buttons-group"
             value={decimalPlaces}
             onChange={handleDecimalPlacesChange}
           >
@@ -193,7 +198,7 @@ const FinancialSummaryTable = () => {
           </RadioGroup>
         </FormControl>
       </Box>
-      <Paper className="paperP" style={{ height: "500px", width: "100%" }}>
+      <Paper>
         {isPrinting ? (
           <TableContainer component={Paper}>
             <Table

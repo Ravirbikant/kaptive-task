@@ -1,12 +1,27 @@
 * {
   padding: 0 !important;
   margin: 0 !important;
+  scrollbar-width: thin;
+  scrollbar-color: gray transparent;
 }
 
 .css-1ygcj2i-MuiTableCell-root,
 .css-1ex1afd-MuiTableCell-root {
   height: 40px;
   padding: 0 10px !important;
+}
+
+.css-1ps6pg7-MuiPaper-root {
+  width: 90% !important;
+  height: 500px;
+  margin: auto !important;
+  margin-top: 20px !important;
+}
+
+.css-pori7h {
+  width: 90%;
+  margin: auto !important;
+  margin-top: 20px !important;
 }
 
 .css-1ygcj2i-MuiTableCell-root {
@@ -30,12 +45,29 @@
   padding-left: 10px !important;
 }
 
+.css-1nrlq1o-MuiFormControl-root {
+  margin-left: 20px !important;
+  display: flex;
+  border: 0.5px solid rgba(0, 0, 0, 0.265) !important;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+ul li {
+  padding-left: 10px !important;
+  padding-top: 2px !important;
+}
+
 @media print {
   body {
     zoom: 0.4 !important;
     padding: 0 !important;
     margin: 0 !important;
     -webkit-print-color-adjust: exact;
+  }
+
+  .css-1ps6pg7-MuiPaper-root,
+  .css-pori7h {
+    width: 100% !important;
   }
 
   .printableTable {
@@ -59,7 +91,7 @@
 
   .printableTable td,
   .printableTable th {
-    border: 1px solid black; /* Ensure borders are visible in print */
+    border: 1px solid black;
   }
 
   .printableTable {

@@ -9,7 +9,6 @@ import {
   Paper,
   IconButton,
   FormControl,
-  InputLabel,
   Select,
   MenuItem,
   RadioGroup,
@@ -17,7 +16,6 @@ import {
   Radio,
   Box,
 } from "@mui/material";
-import { TableVirtuoso } from "react-virtuoso";
 import FinancialData from "../data/financialData.json";
 import DragIndicatorIcon from "@mui/icons-material/DragIndicator";
 import "./styles.css";
@@ -28,22 +26,21 @@ const conversionRates = {
   USD: 1,
 };
 
+let draggedRowIndex = null;
+
 const FinancialSummaryTable = () => {
   const [rows, setRows] = useState(FinancialData.Sheet1);
-  const [draggedRowIndex, setDraggedRowIndex] = useState(null);
-  const [overIndex, setOverIndex] = useState(null);
   const [currency, setCurrency] = useState("USD");
   const [decimalPlaces, setDecimalPlaces] = useState(2);
 
   const handleDragStart = (index) => (event) => {
-    setDraggedRowIndex(index);
+    draggedRowIndex = index;
     event.dataTransfer.effectAllowed = "move";
     event.dataTransfer.setData("text/plain", index);
   };
 
   const handleDragOver = (index) => (event) => {
     event.preventDefault();
-    setOverIndex(index);
   };
 
   const handleDrop = (index) => (event) => {
@@ -52,8 +49,7 @@ const FinancialSummaryTable = () => {
     const draggedRow = newRows.splice(draggedRowIndex, 1)[0];
     newRows.splice(index, 0, draggedRow);
     setRows(newRows);
-    setDraggedRowIndex(null);
-    setOverIndex(null);
+    draggedRowIndex = null;
   };
 
   const handleCurrencyChange = (event) => {
@@ -68,91 +64,6 @@ const FinancialSummaryTable = () => {
     const convertedValue = value * conversionRates[currency];
     return convertedValue.toFixed(decimalPlaces);
   };
-
-  const VirtuosoTableComponents = {
-    Scroller: React.forwardRef((props, ref) => (
-      <TableContainer component={Paper} {...props} ref={ref} />
-    )),
-    Table: (props) => (
-      <Table
-        {...props}
-        sx={{ borderCollapse: "separate", tableLayout: "fixed" }}
-      />
-    ),
-    TableHead,
-    TableRow: ({ item: _item, ...props }) => <TableRow {...props} />,
-    TableBody: React.forwardRef((props, ref) => (
-      <TableBody {...props} ref={ref} />
-    )),
-  };
-
-  const fixedHeaderContent = () => (
-    <TableRow
-      style={{ background: "#d2ddf3", color: "white", fontWeight: "bolder" }}
-    >
-      <TableCell style={{ width: "30px" }}></TableCell>
-      <TableCell style={{ width: "150px" }}>
-        <p>Overhead</p>
-      </TableCell>
-      {Object.keys(rows[0])
-        .filter((key) => key !== "Overhead")
-        .map((month) => (
-          <TableCell key={month} style={{ width: "150px" }}>
-            <p>{month}</p>
-          </TableCell>
-        ))}
-    </TableRow>
-  );
-
-  const CustomRadio = (props) => (
-    <Radio
-      {...props}
-      sx={{
-        "&.Mui-checked": {
-          color: "rgb(7, 7, 154)",
-          "& + .MuiFormControlLabel-label": {
-            color: "rgb(7, 7, 154)",
-          },
-        },
-        "&.Mui-checked.MuiRadio-root": {
-          backgroundColor: "#d2ddf3",
-        },
-      }}
-    />
-  );
-
-  const rowContent = (index, data) => (
-    <TableRow
-      key={data.Overhead}
-      draggable
-      className="test"
-      onDragStart={handleDragStart(index)}
-      onDragOver={handleDragOver(index)}
-      onDrop={handleDrop(index)}
-      style={{
-        cursor: "move",
-        backgroundColor: draggedRowIndex === index ? "green" : "inherit",
-      }}
-    >
-      <TableCell
-        style={{ minWidth: "30px", display: "flex", alignItems: "center" }}
-      >
-        <IconButton>
-          <DragIndicatorIcon />
-        </IconButton>
-      </TableCell>
-      <TableCell style={{ minWidth: "150px", fontWeight: "600" }}>
-        {data.Overhead}
-      </TableCell>
-      {Object.keys(data)
-        .filter((key) => key !== "Overhead")
-        .map((month) => (
-          <TableCell key={month} style={{ minWidth: "150px" }}>
-            {formatValue(data[month])}
-          </TableCell>
-        ))}
-    </TableRow>
-  );
 
   return (
     <Box>
@@ -191,19 +102,73 @@ const FinancialSummaryTable = () => {
             value={decimalPlaces}
             onChange={handleDecimalPlacesChange}
           >
-            <FormControlLabel value={0} control={<CustomRadio />} label="0" />
-            <FormControlLabel value={1} control={<CustomRadio />} label="1" />
-            <FormControlLabel value={2} control={<CustomRadio />} label="2" />
+            <FormControlLabel value={0} control={<Radio />} label="0" />
+            <FormControlLabel value={1} control={<Radio />} label="1" />
+            <FormControlLabel value={2} control={<Radio />} label="2" />
           </RadioGroup>
         </FormControl>
       </Box>
-      <Paper style={{ height: "500px", width: "100%" }}>
-        <TableVirtuoso
-          data={rows}
-          components={VirtuosoTableComponents}
-          fixedHeaderContent={fixedHeaderContent}
-          itemContent={rowContent}
-        />
+      <Paper className="paperP" style={{ width: "100%" }}>
+        <TableContainer>
+          <Table>
+            <TableHead>
+              <TableRow
+                style={{
+                  background: "#d2ddf3",
+                  color: "white",
+                  fontWeight: "bolder",
+                }}
+              >
+                <TableCell style={{ width: "30px" }}></TableCell>
+                <TableCell style={{ width: "150px" }}>
+                  <p>Overhead</p>
+                </TableCell>
+                {Object.keys(rows[0])
+                  .filter((key) => key !== "Overhead")
+                  .map((month) => (
+                    <TableCell key={month} style={{ width: "150px" }}>
+                      <p>{month}</p>
+                    </TableCell>
+                  ))}
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {rows.map((data, index) => (
+                <TableRow
+                  key={data.Overhead + index}
+                  draggable
+                  className="printableRow"
+                  onDragStart={handleDragStart(index)}
+                  onDragOver={handleDragOver(index)}
+                  onDrop={handleDrop(index)}
+                  style={{ cursor: "move" }}
+                >
+                  <TableCell
+                    style={{
+                      minWidth: "30px",
+                      display: "flex",
+                      alignItems: "center",
+                    }}
+                  >
+                    <IconButton>
+                      <DragIndicatorIcon />
+                    </IconButton>
+                  </TableCell>
+                  <TableCell style={{ minWidth: "150px", fontWeight: "600" }}>
+                    {data.Overhead}
+                  </TableCell>
+                  {Object.keys(data)
+                    .filter((key) => key !== "Overhead")
+                    .map((month) => (
+                      <TableCell key={month} style={{ minWidth: "150px" }}>
+                        {formatValue(data[month])}
+                      </TableCell>
+                    ))}
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
       </Paper>
     </Box>
   );

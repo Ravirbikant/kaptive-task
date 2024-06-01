@@ -1,7 +1,7 @@
 1. Right Data
 2. Right Conversion
-3. A4
+3. A4 *
 4. Design improvement
-5. Improve Draggable
+5. Improve Draggable *
 6. Improve code
 7. Proper presentation - 6 PM

@@ -37,16 +37,15 @@ const FinancialSummaryTable = () => {
   const [isPrinting, setIsPrinting] = useState(false);
 
   useEffect(() => {
-    const mediaQueryList = window.matchMedia("print");
+    const handleBeforePrint = () => setIsPrinting(true);
+    const handleAfterPrint = () => setIsPrinting(false);
 
-    const handlePrint = (event) => {
-      setIsPrinting(event.matches);
-    };
-
-    mediaQueryList.addEventListener("change", handlePrint);
+    window.addEventListener("beforeprint", handleBeforePrint);
+    window.addEventListener("afterprint", handleAfterPrint);
 
     return () => {
-      mediaQueryList.removeEventListener("change", handlePrint);
+      window.removeEventListener("beforeprint", handleBeforePrint);
+      window.removeEventListener("afterprint", handleAfterPrint);
     };
   }, []);
 
@@ -80,23 +79,6 @@ const FinancialSummaryTable = () => {
   const formatValue = (value) => {
     const convertedValue = value * conversionRates[currency];
     return convertedValue.toFixed(decimalPlaces);
-  };
-
-  const VirtuosoTableComponents = {
-    Scroller: React.forwardRef((props, ref) => (
-      <TableContainer component={Paper} {...props} ref={ref} />
-    )),
-    Table: (props) => (
-      <Table
-        {...props}
-        sx={{ borderCollapse: "separate", tableLayout: "fixed" }}
-      />
-    ),
-    TableHead,
-    TableRow: ({ item: _item, ...props }) => <TableRow {...props} />,
-    TableBody: React.forwardRef((props, ref) => (
-      <TableBody {...props} ref={ref} />
-    )),
   };
 
   const fixedHeaderContent = () => (
@@ -157,7 +139,7 @@ const FinancialSummaryTable = () => {
           alignItems: "center",
         }}
       >
-        <FormControl sx={{ width: "70px" }}>
+        <FormControl sx={{ width: "90px" }}>
           <Select
             className="drop-down"
             value={currency}
@@ -170,9 +152,9 @@ const FinancialSummaryTable = () => {
               height: "48px",
             }}
           >
-            <MenuItem value="USD">USD</MenuItem>
-            <MenuItem value="EUR">EUR</MenuItem>
-            <MenuItem value="GBP">GBP</MenuItem>
+            <MenuItem value="USD">$ USD</MenuItem>
+            <MenuItem value="EUR">€ EUR</MenuItem>
+            <MenuItem value="GBP">£ GBP</MenuItem>
           </Select>
         </FormControl>
 
@@ -246,9 +228,24 @@ const FinancialSummaryTable = () => {
         ) : (
           <TableVirtuoso
             data={rows}
-            components={VirtuosoTableComponents}
+            components={{
+              Scroller: React.forwardRef((props, ref) => (
+                <TableContainer component={Paper} {...props} ref={ref} />
+              )),
+              Table: (props) => (
+                <Table
+                  {...props}
+                  sx={{ borderCollapse: "separate", tableLayout: "fixed" }}
+                />
+              ),
+              TableHead,
+              TableRow: ({ item: _item, ...props }) => <TableRow {...props} />,
+              TableBody: React.forwardRef((props, ref) => (
+                <TableBody {...props} ref={ref} />
+              )),
+            }}
             fixedHeaderContent={fixedHeaderContent}
-            itemContent={rowContent}
+            itemContent={(index, data) => rowContent(index, data)}
           />
         )}
       </Paper>

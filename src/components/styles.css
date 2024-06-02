@@ -45,7 +45,7 @@
 
 .custom-form-control {
   border: 0.5px solid rgba(0, 0, 0, 0.265) !important;
-  margin: 20px !important;
+  margin: 20px 0 20px 20px !important;
   padding: 15px;
   border-radius: 4px;
   box-shadow: 0 4px 8px #0000001a;

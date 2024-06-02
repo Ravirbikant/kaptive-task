@@ -150,6 +150,7 @@ const FinancialSummaryTable = () => {
   return (
     <Box>
       <Box
+        className="buttons-container"
         sx={{
           display: "flex",
           justifyContent: "flex-end",
@@ -158,6 +159,7 @@ const FinancialSummaryTable = () => {
       >
         <FormControl sx={{ width: "70px" }}>
           <Select
+            className="drop-down"
             value={currency}
             onChange={handleCurrencyChange}
             displayEmpty
@@ -165,7 +167,7 @@ const FinancialSummaryTable = () => {
             sx={{
               background: "#d2ddf3",
               color: "rgb(7, 7, 154)",
-              height: "40px",
+              height: "48px",
             }}
           >
             <MenuItem value="USD">USD</MenuItem>
@@ -174,30 +176,43 @@ const FinancialSummaryTable = () => {
           </Select>
         </FormControl>
 
-        <FormControl>
-          <FormLabel id="demo-row-radio-buttons-group-label">
-            Decimals
+        <FormControl className="custom-form-control">
+          <FormLabel id="decimal-options-label" className="custom-form-label">
+            Decimals :
           </FormLabel>
           <RadioGroup
             row
-            aria-labelledby="demo-row-radio-buttons-group-label"
-            name="row-radio-buttons-group"
+            aria-labelledby="decimal-options-label"
+            name="decimal-options-group"
             value={decimalPlaces}
             onChange={handleDecimalPlacesChange}
+            className="custom-radio-group"
           >
-            <FormControlLabel value={0} control={<Radio />} label="0" />
-            <FormControlLabel value={1} control={<Radio />} label="1" />
-            <FormControlLabel value={2} control={<Radio />} label="2" />
+            <FormControlLabel
+              value={0}
+              control={<Radio />}
+              label="0"
+              className="custom-form-control-label"
+            />
+            <FormControlLabel
+              value={1}
+              control={<Radio />}
+              label="1"
+              className="custom-form-control-label"
+            />
+            <FormControlLabel
+              value={2}
+              control={<Radio />}
+              label="2"
+              className="custom-form-control-label"
+            />
           </RadioGroup>
         </FormControl>
       </Box>
-      <Paper>
+      <Paper className="table-container">
         {isPrinting ? (
           <TableContainer component={Paper}>
-            <Table
-              className="printableTable"
-              sx={{ borderCollapse: "separate", tableLayout: "fixed" }}
-            >
+            <Table className="printableTable">
               <TableHead>{fixedHeaderContent()}</TableHead>
               <TableBody>
                 {rows.map((row, index) => (

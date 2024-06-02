@@ -11,17 +11,15 @@
   padding: 0 10px !important;
 }
 
-.css-1ps6pg7-MuiPaper-root {
+.table-container {
   width: 90% !important;
   height: 500px;
   margin: auto !important;
-  margin-top: 20px !important;
 }
 
-.css-pori7h {
+.buttons-container {
   width: 90%;
   margin: auto !important;
-  margin-top: 20px !important;
 }
 
 .css-1ygcj2i-MuiTableCell-root {
@@ -41,15 +39,36 @@
   border: 0.5px solid rgba(128, 128, 128, 0.2);
 }
 
-.css-cnr1g6-MuiInputBase-root-MuiOutlinedInput-root-MuiSelect-root {
+.drop-down {
   padding-left: 10px !important;
 }
 
-.css-1nrlq1o-MuiFormControl-root {
-  margin-left: 20px !important;
-  display: flex;
+.custom-form-control {
   border: 0.5px solid rgba(0, 0, 0, 0.265) !important;
-  font-family: Arial, Helvetica, sans-serif;
+  margin: 20px !important;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
+  font-family: "Roboto", Arial, Helvetica, sans-serif;
+}
+
+.custom-form-label {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.custom-radio-group {
+  display: flex;
+  justify-content: space-around;
+}
+
+.custom-form-control-label {
+  margin: 0 10px;
+  font-size: 1rem;
+  color: #555;
 }
 
 ul li {
@@ -63,51 +82,16 @@ ul li {
     padding: 0 !important;
     margin: 0 !important;
     -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
   }
 
-  .css-1ps6pg7-MuiPaper-root,
-  .css-pori7h {
+  .table-container,
+  .buttons-container {
     width: 100% !important;
-  }
-
-  .printableTable {
-    page-break-inside: auto;
-    width: 100%;
-    border-collapse: collapse;
-  }
-
-  .printableTable thead {
-    display: table-header-group;
-  }
-
-  .printableTable tbody {
-    display: table-row-group;
-  }
-
-  .printableTable tr {
-    page-break-inside: avoid;
-    page-break-after: auto;
   }
 
   .printableTable td,
   .printableTable th {
     border: 1px solid black;
-  }
-
-  .printableTable {
-    width: 100%;
-  }
-
-  .printableRow {
-    page-break-inside: avoid;
-    break-inside: avoid;
-  }
-
-  thead {
-    display: table-header-group;
-  }
-
-  tfoot {
-    display: table-footer-group;
   }
 }
